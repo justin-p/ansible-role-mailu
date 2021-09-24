@@ -13,6 +13,6 @@ galaxy_info:
         - bionic
         - artful
 
-  galaxy_tags: []
+  galaxy_tags: ["mailu"]
 
 dependencies: []
