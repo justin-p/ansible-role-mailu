@@ -70,7 +70,7 @@
   changed_when: true
   become: true
 
-- name: Flush handlers
+- name: Flush handlers to ensure server reboots
   meta: flush_handlers
 
 - name: Create initial admin account
