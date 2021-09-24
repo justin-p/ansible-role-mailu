@@ -1,0 +1,81 @@
+---
+# tasks file for mailu
+- name: "Create mailu directory at {{ mailu_install_path }}"
+  ansible.builtin.file:
+    path: "{{ mailu_install_path }}"
+    state: directory
+    mode: 0755
+    owner: "{{ mailu_docker_user }}"
+    group: "{{ mailu_docker_user }}"
+
+- name: Upload docker-compose.yml template
+  ansible.builtin.template:
+    src: "{{ mailu_docker_compose }}"
+    dest: "{{ mailu_install_path }}/docker-compose.yml"
+    mode: 0644
+    owner: "{{ mailu_docker_user }}"
+    group: "{{ mailu_docker_user }}"
+
+- name: Upload docker-compose .env template
+  ansible.builtin.template:
+    src: "{{ mailu_docker_compose_env }}"
+    dest: "{{ mailu_install_path }}/.env"
+    mode: 0644
+    owner: "{{ mailu_docker_user }}"
+    group: "{{ mailu_docker_user }}"
+
+- name: Upload mailu.env template
+  ansible.builtin.template:
+    src: "{{ mailu_env_file }}"
+    dest: "{{ mailu_install_path }}/mailu.env"
+    mode: 0644
+    owner: "{{ mailu_docker_user }}"
+    group: "{{ mailu_docker_user }}"
+
+- name: Create and start mailu services
+  community.docker.docker_compose:
+    project_src: "{{ mailu_install_path }}"
+  register: output
+  become: true
+  become_user: "{{ mailu_docker_user }}"
+
+- name: Restart mailu services
+  community.docker.docker_compose:
+    project_src: "{{ mailu_install_path }}"
+    build: false
+    restarted: true
+  register: output
+  become: true
+  become_user: "{{ mailu_docker_user }}"
+
+- name: Ensure mailu services are running
+  ansible.builtin.assert:
+    that:
+      - "output.services.redis.mailu_redis_1.state.running"
+      - "output.services.admin.mailu_admin_1.state.running"
+      - "output.services.front.mailu_front_1.state.running"
+      - "output.services.imap.mailu_imap_1.state.running"
+      - "output.services.smtp.mailu_smtp_1.state.running"
+      - "output.services.antispam.mailu_antispam_1.state.running"
+      - "output.services.webmail.mailu_webmail_1.state.running"
+    quiet: true
+
+- name: Wait 1 minute to ensure services have properly done their 'first boot' tasks
+  ansible.builtin.pause:
+    minutes: 1
+
+- name: Trigger reboot (dunno why, but if the machine does not reboot after inital setup you can't reach rainloop)
+  ansible.builtin.command: /bin/true
+  notify: Reboot machine
+  changed_when: true
+  become: true
+
+- name: Flush handlers
+  meta: flush_handlers
+
+- name: Create initial admin account
+  ansible.builtin.command:
+    chdir: "{{ mailu_install_path }}"
+    cmd: docker-compose exec admin flask mailu admin {{ mailu_initial_admin_username }} {{ mailu_env_mail_domain }} {{ mailu_initial_admin_password }} -m ifmissing
+  register: mailu_admin_user
+  changed_when: '"created admin user" in mailu_admin_user.stdout'
