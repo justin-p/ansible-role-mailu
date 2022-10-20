@@ -71,7 +71,7 @@
   become: true
 
 - name: Flush handlers to ensure server reboots
-  meta: flush_handlers
+  ansible.builtin.meta: flush_handlers
 
 - name: Create initial admin account
   ansible.builtin.command:
