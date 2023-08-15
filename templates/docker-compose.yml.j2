@@ -1,74 +1,129 @@
 version: '2.2'
 services:
+  # External dependencies
   redis:
     image: redis:alpine
     restart: always
     volumes:
       - "{{ mailu_install_path }}/redis:/data"
+    depends_on:
+      - resolver
+    dns:
+      - 172.18.10.10
+
+  # Core services
   front:
-    image: ${DOCKER_ORG:-ghcr.io/mailu}/${DOCKER_PREFIX:-}nginx:${MAILU_VERSION:-1.8}
+    image: ${DOCKER_ORG:-ghcr.io/mailu}/${DOCKER_PREFIX:-}nginx:${MAILU_VERSION:-2.0}
     restart: always
     env_file: mailu.env
     logging:
-      driver: json-file
+      driver: journald
+      options:
+        tag: mailu-front
     ports:
-      - "0.0.0.0:8888:80"
-      - "::1:8888:80"
-      - "0.0.0.0:4433:443"
-      - "::1:4433:443"
-      - "0.0.0.0:2525:25"
-      - "::1:2525:25"
-      - "0.0.0.0:465:465"
-      - "::1:465:465"
-      - "0.0.0.0:587:587"
-      - "::1:587:587"
+      - "127.0.0.1:8888:80"
+      - "127.0.0.1:4433:443"
+      - "127.0.0.1:2525:25"
+      - "127.0.0.1:465:465"
+      - "127.0.0.1:587:587"
     volumes:
       - "{{ mailu_install_path }}/certs:/certs"
       - "{{ mailu_install_path }}/overrides/nginx:/overrides"
+    depends_on:
+      - resolver
+    dns:
+      - 172.18.10.10
+
+  resolver:
+    image: ${DOCKER_ORG:-ghcr.io/mailu}/${DOCKER_PREFIX:-}unbound:${MAILU_VERSION:-2.0}
+    env_file: mailu.env
+    restart: always
+    networks:
+      default:
+        ipv4_address: 172.18.10.10
+
   admin:
-    image: ${DOCKER_ORG:-ghcr.io/mailu}/${DOCKER_PREFIX:-}admin:${MAILU_VERSION:-1.8}
+    image: ${DOCKER_ORG:-ghcr.io/mailu}/${DOCKER_PREFIX:-}admin:${MAILU_VERSION:-2.0}
     restart: always
     env_file: mailu.env
+    logging:
+      driver: journald
+      options:
+        tag: mailu-admin
     volumes:
       - "{{ mailu_install_path }}/data:/data"
       - "{{ mailu_install_path }}/dkim:/dkim"
     depends_on:
       - redis
+      - resolver
+    dns:
+      - 172.18.10.10
+
   imap:
-    image: ${DOCKER_ORG:-ghcr.io/mailu}/${DOCKER_PREFIX:-}dovecot:${MAILU_VERSION:-1.8}
+    image: ${DOCKER_ORG:-ghcr.io/mailu}/${DOCKER_PREFIX:-}dovecot:${MAILU_VERSION:-2.0}
     restart: always
     env_file: mailu.env
+    logging:
+      driver: journald
+      options:
+        tag: mailu-imap
     volumes:
       - "{{ mailu_install_path }}/mail:/mail"
-      - "{{ mailu_install_path }}/overrides:/overrides"
+      - "{{ mailu_install_path }}/overrides/dovecot:/overrides"
     depends_on:
       - front
+      - resolver
+    dns:
+      - 172.18.10.10
+
   smtp:
-    image: ${DOCKER_ORG:-ghcr.io/mailu}/${DOCKER_PREFIX:-}postfix:${MAILU_VERSION:-1.8}
+    image: ${DOCKER_ORG:-ghcr.io/mailu}/${DOCKER_PREFIX:-}postfix:${MAILU_VERSION:-2.0}
     restart: always
     env_file: mailu.env
+    logging:
+      driver: journald
+      options:
+        tag: mailu-smtp
     volumes:
-      - "{{ mailu_install_path }}/overrides:/overrides"
+      - "/mailu/mailqueue:/queue"
+      - "{{ mailu_install_path }}/overrides/postfix:/overrides"
     depends_on:
       - front
+      - resolver
+    dns:
+      - 172.18.10.10
+
   antispam:
-    image: ${DOCKER_ORG:-ghcr.io/mailu}/${DOCKER_PREFIX:-}rspamd:${MAILU_VERSION:-1.8}
+    image: ${DOCKER_ORG:-ghcr.io/mailu}/${DOCKER_PREFIX:-}rspamd:${MAILU_VERSION:-2.0}
+    hostname: antispam
     restart: always
     env_file: mailu.env
+    logging:
+      driver: journald
+      options:
+        tag: mailu-antispam
     volumes:
       - "{{ mailu_install_path }}/filter:/var/lib/rspamd"
       - "{{ mailu_install_path }}/dkim:/dkim"
       - "{{ mailu_install_path }}/overrides/rspamd:/etc/rspamd/override.d"
     depends_on:
       - front
+      - redis
+      - resolver
+    dns:
+      - 172.18.10.10
+
+  # Optional services
   webmail:
-    image: ${DOCKER_ORG:-ghcr.io/mailu}/${DOCKER_PREFIX:-}rainloop:${MAILU_VERSION:-1.8}
+    image: ${DOCKER_ORG:-ghcr.io/mailu}/${DOCKER_PREFIX:-}webmail:${MAILU_VERSION:-2.0}
     restart: always
     env_file: mailu.env
     volumes:
       - "{{ mailu_install_path }}/webmail:/data"
+      - "{{ mailu_install_path }}/overrides/{{ mailu_env_webmail_product }}:/overrides:ro"
     depends_on:
-      - imap
+      - front
+
 networks:
   default:
     driver: bridge

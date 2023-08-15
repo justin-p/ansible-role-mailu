@@ -23,9 +23,11 @@ docker and docker-compose should be setup on the host.
 | mailu_docker_compose_env            | Path to mailu docker-compose env file                                      | "{{ role_path }}/templates/docker-compose.env.j2"                                          |
 | mailu_version                       | Mailu version to use                                                       | 1.8                                                                                        |
 | mailu_docker_subnet                 | Subnet used by docker-compose for mailu                                    | 172.18.0.0/16                                                                              |
+| mailu_dns_ip                        | IP adres that will be used by the resolver container                       | 172.18.10.10                                                                               |
 | mailu_initial_admin_username        | Name for initial account that will be created                              | admin (will result in username admin@{{ mailu_env_mail_domain }})                          |
 | mailu_initial_admin_password        | Password for initial account that will be created                          | Aasnd3hn7dn3nf7wfnoj84                                                                     |
 | mailu_env_file                      | Mailu env file                                                             | "{{ role_path }}/templates/`mailu.env.j2`"                                                 |
+| mailu_env_api_token                 | Env file variable, see `mailu.env.j2` template for more info for more info | F1JqJeRr46hPcQZdgn0i                                                                       |
 | mailu_env_secret_key                | Env file variable, see `mailu.env.j2` template for more info for more info | CUFJMQHXJJY84WVC                                                                           |
 | mailu_env_mail_domain               | Env file variable, see `mailu.env.j2` template for more info for more info | example.net                                                                                |
 | mailu_env_hostnames                 | Env file variable, see `mailu.env.j2` template for more info for more info | mailhost                                                                                   |
@@ -34,7 +36,7 @@ docker and docker-compose should be setup on the host.
 | mailu_env_auth_ratelimit            | Env file variable, see `mailu.env.j2` template for more info for more info | 10/minute;1000/hour                                                                        |
 | mailu_env_opt_out_stats             | Env file variable, see `mailu.env.j2` template for more info for more info | "True"                                                                                     |
 | mailu_env_admin_interface           | Env file variable, see `mailu.env.j2` template for more info for more info | "true"                                                                                     |
-| mailu_env_webmail_product           | Env file variable, see `mailu.env.j2` template for more info for more info | rainloop                                                                                   |
+| mailu_env_webmail_product           | Env file variable, see `mailu.env.j2` template for more info for more info | snappymail                                                                                 |
 | mailu_env_webdav_product            | Env file variable, see `mailu.env.j2` template for more info for more info | none                                                                                       |
 | mailu_env_antivirus_product         | Env file variable, see `mailu.env.j2` template for more info for more info | none                                                                                       |
 | mailu_env_message_size_limit        | Env file variable, see `mailu.env.j2` template for more info for more info | 50000000                                                                                   |
@@ -52,6 +54,7 @@ docker and docker-compose should be setup on the host.
 | mailu_env_webroot_redirect          | Env file variable, see `mailu.env.j2` template for more info for more info | /webmail                                                                                   |
 | mailu_env_web_admin_path            | Env file variable, see `mailu.env.j2` template for more info for more info | /admin                                                                                     |
 | mailu_env_webmail_path              | Env file variable, see `mailu.env.j2` template for more info for more info | /webmail                                                                                   |
+| mailu_env_api_path                  | Env file variable, see `mailu.env.j2` template for more info for more info | /api                                                                                       |
 | mailu_env_sitename                  | Env file variable, see `mailu.env.j2` template for more info for more info | Mailu                                                                                      |
 | mailu_env_website                   | Env file variable, see `mailu.env.j2` template for more info for more info | https://github.com/justin-p/                                                               |
 | mailu_env_compose_project_name      | Env file variable, see `mailu.env.j2` template for more info for more info | mailu                                                                                      |
@@ -60,7 +63,8 @@ docker and docker-compose should be setup on the host.
 | mailu_env_real_ip_from              | Env file variable, see `mailu.env.j2` template for more info for more info |                                                                                            |
 | mailu_env_reject_unlisted_recipient | Env file variable, see `mailu.env.j2` template for more info for more info |                                                                                            |
 | mailu_env_log_level                 | Env file variable, see `mailu.env.j2` template for more info for more info | WARNING                                                                                    |
-| mailu_env_db_flavor                 | Env file variable, see `mailu.env.j2` template for more info for more info | sqlite                                                                                     |
+| mailu_env_tz                        | Env file variable, see `mailu.env.j2` template for more info for more info | Etc/UTC                                                                                    |
+| mailu_env_default_spam_threshold    | Env file variable, see `mailu.env.j2` template for more info for more info | 80                                                                                         |
 
 ## Dependencies
 

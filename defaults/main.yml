@@ -4,8 +4,9 @@ mailu_install_path: "/mailu"
 mailu_docker_user: root
 mailu_docker_compose: "{{ role_path }}/templates/docker-compose.yml.j2"
 mailu_docker_compose_env: "{{ role_path }}/templates/docker-compose.env.j2"
-mailu_version: 1.7
+mailu_version: 2.0
 mailu_docker_subnet: 172.18.0.0/16
+mailu_dns_ip: 172.18.10.10
 mailu_env_file: "{{ role_path }}/templates/mailu.env.j2"
 mailu_env_secret_key: CUFJMQHXJJY84WVC
 mailu_env_mail_domain: example.net
@@ -15,7 +16,7 @@ mailu_env_tls_flavor: notls
 mailu_env_auth_ratelimit: 10/minute;1000/hour
 mailu_env_opt_out_stats: "True"
 mailu_env_admin_interface: "true"
-mailu_env_webmail_product: rainloop
+mailu_env_webmail_product: snappymail
 mailu_env_webdav_product: none
 mailu_env_antivirus_product: none
 mailu_env_message_size_limit: 50000000
@@ -33,6 +34,7 @@ mailu_env_compression_level:
 mailu_env_webroot_redirect: /webmail
 mailu_env_web_admin_path: /admin
 mailu_env_webmail_path: /webmail
+mailu_env_api_path: /api
 mailu_env_sitename: Mailu
 mailu_env_website: https://github.com/justin-p/
 mailu_env_compose_project_name: mailu
@@ -41,6 +43,8 @@ mailu_env_real_ip_header:
 mailu_env_real_ip_from:
 mailu_env_reject_unlisted_recipient:
 mailu_env_log_level: WARNING
-mailu_env_db_flavor: sqlite
+mailu_env_tz: Etc/UTC
+mailu_env_default_spam_threshold: 80
+mailu_env_api_token: F1JqJeRr46hPcQZdgn0i
 mailu_initial_admin_username: admin
 mailu_initial_admin_password: Aasnd3hn7dn3nf7wfnoj84
