@@ -153,32 +153,6 @@ A list of other roles hosted on Galaxy should go here, plus any details in regar
         mailu_initial_admin_password: StrongPassword01!
 ```
 
-#### `"{{ playbook_dir }}/templates/rules.v4.j2"` content
-
-```yaml
-*nat
-## For containers to access the 'WAN' you need to add the subnet as a POSTROUTING rule.
-## The default docker subnet is added below.
--A POSTROUTING -s 172.17.0.0/16 ! -o docker0 -j MASQUERADE
-## When using docker-compose a separte subnet is created.
-## I recommend adding a network block to staticly set a network for each docker-compose project, like in the example below.
-##
-## networks:
-##   default:
-##     driver: bridge
-##     ipam:
-##       driver: default
-##       config:
-##         - subnet: 192.168.203.0/24
-##
-## Then you can add this network to this file like in the line below.
-##
-## -A POSTROUTING -s 192.168.203.0/24 ! -o br-* -j MASQUERADE
-##
--A POSTROUTING -s {{ docker_subnet }} ! -o br-* -j MASQUERADE
-COMMIT
-```
-
 ## License
 
 MIT
