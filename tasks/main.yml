@@ -64,15 +64,6 @@
   ansible.builtin.pause:
     minutes: 1
 
-- name: Trigger reboot (dunno why, but if the machine does not reboot after inital setup you can't reach rainloop)
-  ansible.builtin.command: /bin/true
-  notify: Reboot machine
-  changed_when: true
-  become: true
-
-- name: Flush handlers to ensure server reboots
-  ansible.builtin.meta: flush_handlers
-
 - name: Create initial admin account
   ansible.builtin.command:
     chdir: "{{ mailu_install_path }}"
