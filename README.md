@@ -1,9 +1,8 @@
 # Ansible-role-mailu
 
-[![Ansible-role-mailu](https://img.shields.io/ansible/role/56353?label=Role%20Name&logo=ansible&style=flat-square)](https://galaxy.ansible.com/justin_p/mailu)
-[![Ansible Quality Score](https://img.shields.io/ansible/quality/56353?label=Ansible%20Quality%20Score&logo=ansible&style=flat-square)](https://galaxy.ansible.com/justin_p/mailu)
-[![Ansible Role Downloads](https://img.shields.io/ansible/role/d/56353?label=Ansible%20Role%20Downloads&logo=ansible&style=flat-square)](https://galaxy.ansible.com/justin_p/mailu)
-[![Github Actions](https://img.shields.io/github/workflow/status/justin-p/ansible-role-mailu/CI?label=Github%20Actions&logo=github&style=flat-square)](https://github.com/justin-p/ansible-role-mailu/actions)
+[![Ansible Role Name](https://img.shields.io/ansible/role/d/justin_p/mailu?style=flat-square
+)](https://galaxy.ansible.com/justin_p/mailu)
+[![Github Actions](https://img.shields.io/github/actions/workflow/status/justin-p/ansible-role-mailu/only_linting.yml?label=Github%20Actions&logo=github&style=flat-square)](https://github.com/justin-p/ansible-role-mailu/actions)
 
 Ansible role for Mailu. Mailu is a simple yet full-featured mail server as a set of Docker images.
 
